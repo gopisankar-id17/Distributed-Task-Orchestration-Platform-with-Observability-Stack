@@ -1,14 +1,10 @@
-pipeline {
-agent any
-
-```
 tools {
     nodejs "NodeJS-18"
 }
 
 environment {
     DOCKER_IMAGE = "gopins/devops-node-app"
-    VM_IP = "35.232.96.219"
+    VM_IP = "35.188.219.161"
     VM_USER = "gopins172"
 }
 
@@ -44,27 +40,9 @@ stages {
         }
     }
 
-    stage('Deploy to GCP VM') {
+    stage('Deploy') {
         steps {
-            bat """
-            ssh %VM_USER%@%VM_IP% ^
-            "docker stop nodeapp || true && ^
-            docker rm nodeapp || true && ^
-            docker pull %DOCKER_IMAGE% && ^
-            docker run -d -p 3000:3000 --name nodeapp %DOCKER_IMAGE%"
-            """
+            bat "ssh %VM_USER%@%VM_IP% docker pull %DOCKER_IMAGE%"
         }
     }
-}
-
-post {
-    success {
-        echo 'Deployment Successful 🚀'
-    }
-    failure {
-        echo 'Pipeline Failed ❌'
-    }
-}
-```
-
 }
