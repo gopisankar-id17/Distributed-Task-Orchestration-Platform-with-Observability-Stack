@@ -13,28 +13,21 @@ pipeline {
 
     stages {
 
-        stage('Checkout Code') {
-            steps {
-                git branch: 'main',
-                    url : 'https://github.com/gopisankar-id17/Devops.git'
-            }
-        }
-
         stage('Install Dependencies') {
             steps {
-                bat 'npm install'
+                sh 'npm install'
             }
         }
 
         stage('Run Tests') {
             steps {
-                bat 'npm test'
+                sh 'npm test'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                bat 'docker build -t %DOCKER_IMAGE% .'
+                sh 'docker build -t $DOCKER_IMAGE .'
             }
         }
 
@@ -45,17 +38,17 @@ pipeline {
                     usernameVariable: 'DOCKER_USER',
                     passwordVariable: 'DOCKER_PASS'
                 )]) {
-                    bat 'docker login -u %DOCKER_USER% -p %DOCKER_PASS%'
-                    bat 'docker push %DOCKER_IMAGE%'
+                    sh 'docker login -u $DOCKER_USER -p $DOCKER_PASS'
+                    sh 'docker push $DOCKER_IMAGE'
                 }
             }
         }
 
         stage('Deploy') {
             steps {
-                bat "ssh %VM_USER%@%VM_IP% docker pull %DOCKER_IMAGE%"
-                bat "ssh %VM_USER%@%VM_IP% docker stop myapp || true"
-                bat "ssh %VM_USER%@%VM_IP% docker run -d --name myapp -p 80:3000 %DOCKER_IMAGE%"
+                sh 'ssh $VM_USER@$VM_IP docker pull $DOCKER_IMAGE'
+                sh 'ssh $VM_USER@$VM_IP docker stop myapp || true'
+                sh 'ssh $VM_USER@$VM_IP docker run -d --name myapp -p 80:3000 $DOCKER_IMAGE'
             }
         }
     }
