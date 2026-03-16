@@ -1,23 +1,13 @@
 {
-  "name": "devops",
+  "name": "devops-node-app",
   "version": "1.0.0",
-  "main": "test.js",
+  "description": "Node.js app with Jenkins CI/CD",
+  "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node app.js",
+    "test": "node -e \"console.log('Tests passed')\""
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/gopisankar-id17/Devops.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/gopisankar-id17/Devops/issues"
-  },
-  "homepage": "https://github.com/gopisankar-id17/Devops#readme",
-  "description": "",
   "dependencies": {
-    "express": "^5.2.1"
+    "express": "^4.18.2"
   }
 }

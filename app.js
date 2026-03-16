@@ -5,4 +5,6 @@ app.get('/', (req, res) => {
   res.send("Hello DevOps World!");
 });
 
-app.listen(3000, () => console.log("Server running"));
+app.listen(3000, () => {
+  console.log("Server running on port 3000");
+});

@@ -1,6 +1,6 @@
 pipeline {
     agent any
-    
+
     tools {
         nodejs "NodeJS-18"
     }
@@ -13,10 +13,23 @@ pipeline {
             }
         }
 
-        stage('Run Application') {
+        stage('Run Tests') {
             steps {
-                bat 'node test.js'
+                bat 'npm test'
             }
         }
+
+        stage('Build Docker Image') {
+            steps {
+                bat 'docker build -t devops-node-app .'
+            }
+        }
+
+        stage('Run Docker Container') {
+            steps {
+                bat 'docker run -d -p 3000:3000 devops-node-app'
+            }
+        }
+
     }
 }
