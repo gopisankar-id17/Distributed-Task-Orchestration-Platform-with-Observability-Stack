@@ -15,7 +15,8 @@ pipeline {
 
         stage('Checkout Code') {
             steps {
-                git 'https://github.com/gopisankar-id17/Devops.git'
+                git branch: 'main',
+                    url : 'https://github.com/gopisankar-id17/Devops.git'
             }
         }
 
