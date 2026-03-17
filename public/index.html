@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo App</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #1a1a2e;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            background: #16213e;
+            padding: 2rem;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+        h1 {
+            color: #e94560;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+        }
+        .input-area {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 1.5rem;
+        }
+        input {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: #0f3460;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+        }
+        input::placeholder { color: #aaa; }
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            background: #e94560;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        button:hover { background: #c73652; }
+        .todo-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            background: #0f3460;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            transition: 0.2s;
+        }
+        .todo-text {
+            flex: 1;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        .todo-text.completed {
+            text-decoration: line-through;
+            color: #aaa;
+        }
+        .delete-btn {
+            background: transparent;
+            color: #e94560;
+            font-size: 1.2rem;
+            padding: 4px 8px;
+        }
+        .delete-btn:hover { background: rgba(233,69,96,0.2); }
+        .stats {
+            text-align: center;
+            color: #aaa;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📝 Todo App</h1>
+        <div class="input-area">
+            <input type="text" id="todoInput" placeholder="Add a new todo..." />
+            <button onclick="addTodo()">Add</button>
+        </div>
+        <div id="todoList"></div>
+        <div class="stats" id="stats"></div>
+    </div>
+
+    <script>
+        async function loadTodos() {
+            const res = await fetch('/todos');
+            const todos = await res.json();
+            renderTodos(todos);
+        }
+
+        async function addTodo() {
+            const input = document.getElementById('todoInput');
+            if (!input.value.trim()) return;
+            await fetch('/todos', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: input.value })
+            });
+            input.value = '';
+            loadTodos();
+        }
+
+        async function deleteTodo(id) {
+            await fetch(`/todos/${id}`, { method: 'DELETE' });
+            loadTodos();
+        }
+
+        async function toggleTodo(id) {
+            await fetch(`/todos/${id}`, { method: 'PATCH' });
+            loadTodos();
+        }
+
+        function renderTodos(todos) {
+            const list = document.getElementById('todoList');
+            const stats = document.getElementById('stats');
+            list.innerHTML = todos.map(todo => `
+                <div class="todo-item">
+                    <span class="todo-text ${todo.completed ? 'completed' : ''}"
+                          onclick="toggleTodo(${todo.id})">
+                        ${todo.completed ? '✅' : '⬜'} ${todo.text}
+                    </span>
+                    <button class="delete-btn" onclick="deleteTodo(${todo.id})">🗑️</button>
+                </div>
+            `).join('');
+            const completed = todos.filter(t => t.completed).length;
+            stats.textContent = `${completed}/${todos.length} completed`;
+        }
+
+        document.getElementById('todoInput').addEventListener('keypress', e => {
+            if (e.key === 'Enter') addTodo();
+        });
+
+        loadTodos();
+    </script>
+</body>
+</html>
+```
+
+---
+
+### How to add these files on GitHub:
+
+**For `app.js`** — edit existing file ✏️
+
+**For `public/index.html`** — create new file:
+```
+GitHub → Your repo → Add file
+→ Create new file
+→ Name: public/index.html
+→ Paste the HTML code
+→ Commit
+```
+
+---
+
+Jenkins will auto deploy and your Todo App will be live at:
+```
+http://136.116.147.49
