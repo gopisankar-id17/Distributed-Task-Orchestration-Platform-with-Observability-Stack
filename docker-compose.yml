@@ -46,11 +46,11 @@ services:
     networks:
       - monitoring
 
-  node-exporter:   # ✅ FIXED (same level as others)
-    image: prom/node-exporter
-    container_name: node-exporter
+  node-exporter:
+    image: prom/node-exporter:latest
     ports:
       - "9100:9100"
+    restart: always
     networks:
       - monitoring
 
