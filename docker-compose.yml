@@ -39,9 +39,18 @@ services:
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin123
+      - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
     volumes:
       - grafana-data:/var/lib/grafana
     restart: always
+    networks:
+      - monitoring
+
+  node-exporter:   # ✅ FIXED (same level as others)
+    image: prom/node-exporter
+    container_name: node-exporter
+    ports:
+      - "9100:9100"
     networks:
       - monitoring
 
