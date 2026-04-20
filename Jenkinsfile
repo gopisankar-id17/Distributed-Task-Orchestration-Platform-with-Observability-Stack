@@ -2,32 +2,30 @@ pipeline {
     agent any
 
     tools {
-        nodejs "NodeJS-18"
+        nodejs "NodeJS"
     }
 
     environment {
         DOCKER_IMAGE = "gopins/devops-node-app"
-        VM_IP        = "35.188.219.161"
-        VM_USER      = "gopins172"
     }
 
     stages {
 
         stage('Install Dependencies') {
             steps {
-                bat 'npm install'
+                sh 'npm install'
             }
         }
 
         stage('Run Tests') {
             steps {
-                bat 'npm test'
+                sh 'npm test'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                bat 'docker build -t %DOCKER_IMAGE% .'
+                sh 'docker build -t $DOCKER_IMAGE .'
             }
         }
 
@@ -38,17 +36,20 @@ pipeline {
                     usernameVariable: 'DOCKER_USER',
                     passwordVariable: 'DOCKER_PASS'
                 )]) {
-                    bat 'docker login -u %DOCKER_USER% -p %DOCKER_PASS%'
-                    bat 'docker push %DOCKER_IMAGE%'
+                    sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
+                    sh 'docker push $DOCKER_IMAGE'
                 }
             }
         }
 
-        stage('Deploy to GCP VM') {
+        stage('Deploy (Local VM)') {
             steps {
-                bat """
-                ssh %VM_USER%@%VM_IP% "docker pull %DOCKER_IMAGE% && docker stop devops-node-app || true && docker rm devops-node-app || true && docker run -d -p 80:3000 --name devops-node-app %DOCKER_IMAGE%"
-                """
+                sh '''
+                docker pull $DOCKER_IMAGE
+                docker stop devops-node-app || true
+                docker rm devops-node-app || true
+                docker run -d -p 80:3000 --name devops-node-app $DOCKER_IMAGE
+                '''
             }
         }
 
@@ -56,10 +57,10 @@ pipeline {
 
     post {
         success {
-            echo "Deployment successful"
+            echo "Deployment successful 🚀"
         }
         failure {
-            echo "Pipeline failed - check logs"
+            echo "Pipeline failed ❌"
         }
     }
 }
